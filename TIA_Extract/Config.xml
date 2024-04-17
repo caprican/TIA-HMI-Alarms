@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PackageConfiguration xmlns="http://www.siemens.com/automation/Openness/AddIn/Publisher/V19">
+  <!--Enter values for Author, Description, AddInVersion, Name, ...-->
+  <Author>A. MORELLET</Author>
+  <Description>Convert comment from global db to hmi alarms</Description>
+  <AddInVersion>V1.0</AddInVersion>
+  <Product>
+    <Name>Alarms builder</Name>
+    <Id>SKF_AlarmsBuilder</Id>
+    <Version>1.0</Version>
+  </Product>
+  <FeatureAssembly>
+    <AssemblyInfo>
+      <Assembly>TIA_Extract.dll</Assembly>
+      <Pdb>TIA_Extract.pdb</Pdb>
+    </AssemblyInfo>
+  </FeatureAssembly>
+  <DisplayInMultiuser />
+  <AdditionalAssemblies>
+    <AssemblyInfo>
+      <Assembly>SimaticML.dll</Assembly>
+      <Pdb>SimaticML.pdb</Pdb>
+    </AssemblyInfo>
+
+  </AdditionalAssemblies>
+  
+  <RequiredPermissions>
+    <TIAPermissions>
+      <TIA.ReadWrite />
+    </TIAPermissions>
+    
+    <SecurityPermissions>
+      <System.Security.Permissions.SecurityPermission.UnmanagedCode/>
+      <System.Security.Permissions.FileDialogPermission/>
+      <System.Security.Permissions.UIPermission/>
+      <System.Security.Permissions.MediaPermission/>
+      <Siemens.Engineering.AddIn.Permissions.ProcessStartPermission/>
+      <System.Net.WebPermission/>
+      <System.Security.Permissions.KeyContainerPermission/>
+      <System.Net.SocketPermission/>
+      <!--<System.Data.Odbc.OdbcPermission/>-->
+      <System.Security.Permissions.WebBrowserPermission/>
+      <System.Net.NetworkInformation.NetworkInformationPermission/>
+      <System.Security.Permissions.StorePermission/>
+      <System.Configuration.ConfigurationPermission/>
+      <System.Security.Permissions.FileIOPermission/>
+      <System.Diagnostics.EventLogPermission/>
+      <!--<System.Drawing.Printing.PrintingPermission/>-->
+      <System.Security.Permissions.IsolatedStorageFilePermission/>
+      <System.Data.OleDb.OleDbPermission/>
+      <System.Security.Permissions.RegistryPermission/>
+      <System.Data.SqlClient.SqlClientPermission/>
+      <System.Security.Permissions.EnvironmentPermission/>
+      <!--<System.Net.Mail.SmtpPermission/>-->
+    </SecurityPermissions>
+  </RequiredPermissions>
+
+  <!--<Certificates>
+    <SigningCertificate>..\Certificates\SigningFile.p12</SigningCertificate>
+      <AdditionalCertificates>
+        <Certificate>..\Certificates\AdditionalCert.cer</Certificate>
+      </AdditionalCertificates>
+    </Certificates>-->
+</PackageConfiguration>
