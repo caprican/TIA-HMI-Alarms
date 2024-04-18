@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TIA_Extract.Properties {
+namespace Extract.Core.Properties {
     using System;
     
     
@@ -22,24 +22,24 @@ namespace TIA_Extract.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resource {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resource() {
+        internal Resources() {
         }
         
         /// <summary>
         ///   Retourne l'instance ResourceManager mise en cache utilisée par cette classe.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TIA_Extract.Properties.Resource", typeof(Resource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Extract.Core.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace TIA_Extract.Properties {
         ///   les recherches de ressources à l'aide de cette classe de ressource fortement typée.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace TIA_Extract.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Génération des arlarmes terminée.
         /// </summary>
-        internal static string BuildAlarmsEnded {
+        public static string BuildAlarmsEnded {
             get {
                 return ResourceManager.GetString("BuildAlarmsEnded", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace TIA_Extract.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à La génération à été annulé par l&apos;utilisateur.
         /// </summary>
-        internal static string CancelByUser {
+        public static string CancelByUser {
             get {
                 return ResourceManager.GetString("CancelByUser", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace TIA_Extract.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Généré depuis bloc de donnée.
         /// </summary>
-        internal static string ContextMenu_GlobalDb {
+        public static string ContextMenu_GlobalDb {
             get {
                 return ResourceManager.GetString("ContextMenu_GlobalDb", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace TIA_Extract.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Mettre à jours la table.
         /// </summary>
-        internal static string ContextMenu_HmiTag {
+        public static string ContextMenu_HmiTag {
             get {
                 return ResourceManager.GetString("ContextMenu_HmiTag", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace TIA_Extract.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Généré depuis le dossier.
         /// </summary>
-        internal static string ContextMenu_UserGroup {
+        public static string ContextMenu_UserGroup {
             get {
                 return ResourceManager.GetString("ContextMenu_UserGroup", resourceCulture);
             }
@@ -108,9 +108,27 @@ namespace TIA_Extract.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Aucun DB d&apos;alarmes trouvé dans le dossier.
         /// </summary>
-        internal static string EmptyGlobalDb {
+        public static string EmptyGlobalDb {
             get {
                 return ResourceManager.GetString("EmptyGlobalDb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Alarmes mises à jour.
+        /// </summary>
+        public static string Feedback_AlarmsUpdated_Text {
+            get {
+                return ResourceManager.GetString("Feedback_AlarmsUpdated_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à La tâche à été annulé par l&apos;utilisateur.
+        /// </summary>
+        public static string TaskGenerateCancel {
+            get {
+                return ResourceManager.GetString("TaskGenerateCancel", resourceCulture);
             }
         }
     }

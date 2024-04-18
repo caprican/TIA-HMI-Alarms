@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Debug TIA Portal Add-In": {
+      "commandName": "Executable",
+      "executablePath": "$(TiaPortalLocation)\\PublicAPI\\V18.AddIn\\Siemens.Engineering.AddIn.DebugStarter.exe",
+      "commandLineArgs": "$(ProjectDir)$(OutDir)Extract_V18.addin"
+    }
+  }
+}

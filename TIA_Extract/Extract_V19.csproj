@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <RootNamespace>TIA_Extract</RootNamespace>
-    <AssemblyName>TIA_Extract</AssemblyName>
+    <AssemblyName>Extract_V19</AssemblyName>
     <TargetFramework>net48</TargetFramework>
     <Product>TIA_Extract</Product>
     <Copyright>Copyright © 2023</Copyright>
@@ -65,16 +65,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Properties\Resource.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <ProjectReference Include="..\Extract.Core\Extract.Core.csproj">
+      <Private>True</Private>
+      <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </ProjectReference>
   </ItemGroup>
 </Project>

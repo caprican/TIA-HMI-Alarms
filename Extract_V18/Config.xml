@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<PackageConfiguration xmlns="http://www.siemens.com/automation/Openness/AddIn/Publisher/V19">
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PackageConfiguration xmlns="http://www.siemens.com/automation/Openness/AddIn/Publisher/V18">
   <!--Enter values for Author, Description, AddInVersion, Name, ...-->
   <Author>A. MORELLET</Author>
   <Description>Convert comment from global db to hmi alarms</Description>
@@ -11,8 +11,8 @@
   </Product>
   <FeatureAssembly>
     <AssemblyInfo>
-      <Assembly>Extract_V19.dll</Assembly>
-      <Pdb>Extract_V19.pdb</Pdb>
+      <Assembly>Extract_V18.dll</Assembly>
+      <Pdb>Extract_V18.pdb</Pdb>
     </AssemblyInfo>
   </FeatureAssembly>
   <DisplayInMultiuser />
@@ -27,12 +27,12 @@
     </AssemblyInfo>
 
   </AdditionalAssemblies>
-
+  
   <RequiredPermissions>
     <TIAPermissions>
       <TIA.ReadWrite />
     </TIAPermissions>
-
+    
     <SecurityPermissions>
       <System.Security.Permissions.SecurityPermission.UnmanagedCode/>
       <System.Security.Permissions.FileDialogPermission/>
@@ -58,11 +58,4 @@
       <!--<System.Net.Mail.SmtpPermission/>-->
     </SecurityPermissions>
   </RequiredPermissions>
-
-  <!--<Certificates>
-    <SigningCertificate>..\Certificates\SigningFile.p12</SigningCertificate>
-      <AdditionalCertificates>
-        <Certificate>..\Certificates\AdditionalCert.cer</Certificate>
-      </AdditionalCertificates>
-    </Certificates>-->
 </PackageConfiguration>
