@@ -35,11 +35,6 @@ namespace TIA_Extract
         private readonly TiaPortal _tiaPortal;
 
         /// <summary>
-        /// Opened TIA Portal project
-        /// </summary>
-        internal Project project;
-
-        /// <summary>
         /// The display name of the Add-In.
         /// </summary>
         private const string s_DisplayNameOfAddIn = "Alarms HMI";
@@ -61,11 +56,8 @@ namespace TIA_Extract
         public AlarmsTextsAddIn(TiaPortal tiaPortal) : base(s_DisplayNameOfAddIn)
         {
             _tiaPortal = tiaPortal;
-            try
-            {
-                _feedbackContext = _tiaPortal.GetFeedbackContext();
-            }catch { }
-            
+            GetFeedbackContext();
+
             //#if DEBUG
             //            Core.Properties.Resources.Culture = new CultureInfo("en-US");
             //#else
@@ -73,17 +65,6 @@ namespace TIA_Extract
             //            TiaPortalSetting UILanguageSetting = generalSettingsFolder.Settings.Find("UserInterfaceLanguage");
             //            Core.Properties.Resources.Culture = UILanguageSetting.Value as CultureInfo;
             //#endif
-            //project = _tiaPortal.Projects.First(x => x.IsPrimary);
-
-            //// Gets the TiaPortal version from the project filename extension
-            //var projectVersion = project.Path.Extension;
-            //var _tiaVersion = projectVersion.Substring(3).Replace("_", ".");
-
-            //var dirPath = Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), AppDomain.CurrentDomain.FriendlyName);
-            //var dir = Directory.CreateDirectory(dirPath);
-            //var _tempFilePath = dir.FullName;
-
-            //var path = project.Path.Directory.FullName;
         }
 
         /// <summary>
@@ -107,26 +88,23 @@ namespace TIA_Extract
 
         private void OnGenerateClick(MenuSelectionProvider<IEngineeringObject> menuSelectionProvider)
         {
-            if(_feedbackContext is null)
+            GetFeedbackContext();
+
+            if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary) is null && _tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project is null)
             {
-                try
-                {
-                    _feedbackContext = _tiaPortal.GetFeedbackContext();
-                }
-                catch { }
+                _feedbackContext.Log(NotificationIcon.Information, Extract.Core.Properties.Resources.Feedback_NoProject_Text);
+                return;
             }
 
-            project = _tiaPortal.Projects.First(x => x.IsPrimary);
-
             // Gets the TiaPortal version from the project filename extension
-            var projectVersion = project.Path.Extension;
-            var _tiaVersion = projectVersion.Substring(3).Replace("_", ".");
+            var projectPath = _tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Path ?? _tiaPortal.LocalSessions?.FirstOrDefault(x => x.Project.IsPrimary)?.Project?.Path;
+            var _tiaVersion = Regex.Match(projectPath.Extension.Replace("_", "."), @"\d.+", RegexOptions.IgnoreCase).Value;
 
-            var dirPath = Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), AppDomain.CurrentDomain.FriendlyName);
-            var dir = Directory.CreateDirectory(dirPath);
-            var _tempFilePath = dir.FullName;
+            //var dirPath = Path.Combine(Environment.ExpandEnvironmentVariables("%TEMP%"), AppDomain.CurrentDomain.FriendlyName);
+            //var dir = Directory.CreateDirectory(dirPath);
+            //var _tempFilePath = dir.FullName;
 
-            var path = project.Path.Directory.FullName;
+            //var path = project.Path.Directory.FullName;
 
             using (var exclusiveAccess = _tiaPortal.ExclusiveAccess())
             {
@@ -141,7 +119,7 @@ namespace TIA_Extract
                     switch (plcBlock)
                     {
                         case SimaticSW.GlobalDB globalDb:
-                            BuildAlarms(exclusiveAccess, globalDb);
+                            BuildAlarms(exclusiveAccess, globalDb, projectPath.Directory.FullName);
                             break;
                         case SimaticSW.PlcBlockUserGroup blockGroup:
 
@@ -154,7 +132,7 @@ namespace TIA_Extract
                                     foreach (var plcDataBlock in blockGroup.Blocks.Where(bloc => bloc is SimaticSW.GlobalDB).Cast<SimaticSW.GlobalDB>())
                                     {
                                         asUpdateAlarms = true;
-                                        BuildAlarms(exclusiveAccess, plcDataBlock);
+                                        BuildAlarms(exclusiveAccess, plcDataBlock, projectPath.Directory.FullName);
                                         _feedbackContext.Log(NotificationIcon.Success, Extract.Core.Properties.Resources.Feedback_AlarmsUpdated_Text);
                                     }
                                 }
@@ -179,10 +157,12 @@ namespace TIA_Extract
                             foreach (var connection in hmiSoft.Connections)
                             {
                                 var devices = new List<Device>();
-                                devices.AddRange(project.Devices);
+                                devices.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary).Devices);
+                                devices.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices);
 
                                 var deviceGroup = new List<DeviceUserGroup>();
-                                deviceGroup.AddRange(project.DeviceGroups);
+                                deviceGroup.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary).DeviceGroups);
+                                deviceGroup.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups);
                                 do
                                 {
                                     if (deviceGroup.Count > 0)
@@ -203,7 +183,7 @@ namespace TIA_Extract
                                         {
                                             if (plcGroupBlock is SimaticSW.GlobalDB dB)
                                             {
-                                                BuildAlarms(exclusiveAccess, dB);
+                                                BuildAlarms(exclusiveAccess, dB, projectPath.Directory.FullName);
                                                 _feedbackContext.Log(NotificationIcon.Success, Extract.Core.Properties.Resources.Feedback_AlarmsUpdated_Text);
                                             }
                                         }
@@ -215,11 +195,9 @@ namespace TIA_Extract
                 }
                 _feedbackContext.Log(NotificationIcon.Success, Extract.Core.Properties.Resources.BuildAlarmsEnded);
             }
-
         }
 
-
-        public void BuildAlarms(ExclusiveAccess exclusiveAccess, SimaticSW.GlobalDB globalDB)
+        public void BuildAlarms(ExclusiveAccess exclusiveAccess, SimaticSW.GlobalDB globalDB, string projectDirectoryPath)
         {
             _feedbackContext.Log(NotificationIcon.Information, $"Extraction des alarmes depuis {globalDB.Name}");
 
@@ -244,7 +222,7 @@ namespace TIA_Extract
                     }
                 }
 
-                var path = Path.Combine(project.Path.Directory.FullName, userFolder, globalDB.Name + ".xml");
+                var path = Path.Combine(projectDirectoryPath, userFolder, globalDB.Name + ".xml");
 
                 try
                 {
@@ -265,10 +243,25 @@ namespace TIA_Extract
                 if (serializer.Deserialize(myFile) is SimaticML.Document document && document.SWBlocks is SimaticML.SW.Blocks.GlobalDB Db)
                 {
                     var devices = new List<Device>();
-                    devices.AddRange(project.Devices);
-
                     var deviceGroup = new List<DeviceUserGroup>();
-                    deviceGroup.AddRange(project.DeviceGroups);
+
+                    if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices?.Count > 0)
+                    {
+                        devices.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices);
+                    }
+                    if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices?.Count > 0)
+                    {
+                        devices.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices);
+                    }
+                    if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups?.Count > 0)
+                    {
+                        deviceGroup.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups);
+                    }
+                    if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups?.Count > 0)
+                    {
+                        deviceGroup.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups);
+                    }
+
                     do
                     {
                         if (deviceGroup.Count > 0)
@@ -325,15 +318,25 @@ namespace TIA_Extract
 
                                         if (exportTag != null)
                                         {
+                                            var activeLanguages = new List<Language>();
+                                            if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.LanguageSettings?.ActiveLanguages?.Count > 0)
+                                            {
+                                                activeLanguages.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary).LanguageSettings.ActiveLanguages);
+                                            }
+                                            if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project?.LanguageSettings?.ActiveLanguages?.Count > 0)
+                                            {
+                                                activeLanguages.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.LanguageSettings.ActiveLanguages);
+                                            }
+
                                             switch (exportTag.Datatype)
                                             {
                                                 case "Struct":
-                                                    foreach (var lang in project.LanguageSettings.ActiveLanguages)
+                                                    foreach (var lang in activeLanguages)
                                                     {
                                                         var txt = exportTag.Comment.Find(comment => comment.Lang == lang.Culture.Name).Value;
                                                         if (!string.IsNullOrEmpty(txt))
                                                         {
-                                                            var match = Regex.Match(txt, @"(.+?)\[AlarmClass=""[^""]*""](.+?)", RegexOptions.IgnoreCase);
+                                                            var match = Regex.Match(txt, @"\[AlarmClass=(.+?)\]", RegexOptions.IgnoreCase);
                                                             if (match.Success && hmiUnified.AlarmClasses.Find(match.Groups[1].Value) is HmiAlarmClass groupAlarmClass)
                                                             {
                                                                 alarmClass = groupAlarmClass;
@@ -364,21 +367,29 @@ namespace TIA_Extract
                                                     else
                                                     {
                                                         exclusiveAccess.Text = $"Création de l'alarme depuis {globalDB.Name}/{exportTag.Name} dans {device.Name}";
-                                                        tag = (string.IsNullOrEmpty(folderName) ? hmiUnified.Tags.Create(tagname) : hmiUnified.Tags.Create(tagname, folderName));
-
+                                                        if(string.IsNullOrEmpty(folderName))
+                                                        {
+                                                            tag = hmiUnified.Tags.Create(tagname);
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!hmiUnified.TagTables.Any(a => a.Name == folderName))
+                                                            {
+                                                                hmiUnified.TagTables.Create(folderName);
+                                                            }
+                                                            tag = hmiUnified.Tags.Create(tagname, folderName);
+                                                        }
                                                     }
                                                     tag.Connection = connexion.Name;
                                                     tag.PlcTag = $"{globalDB.Name}.{internalMember.Name}";
-
 
                                                     var alarms = hmiUnified.DiscreteAlarms.Find(tagname) ?? hmiUnified.DiscreteAlarms.Create(tagname);
                                                     alarms.RaisedStateTag = tagname;
                                                     alarms.AlarmClass = alarmClass.Name;
 
-
                                                     alarms.Origin = globalDB.Name.Replace(databaseMark, string.Empty);
 
-                                                    foreach (var lang in project.LanguageSettings.ActiveLanguages)
+                                                    foreach (var lang in activeLanguages)
                                                     {
                                                         if (alarms.EventText.Items.Find(lang) is MultilingualTextItem multilingualText)
                                                         {
@@ -424,5 +435,16 @@ namespace TIA_Extract
             return plc is null ? default : (T)Convert.ChangeType(plc, typeof(T));
         }
 
+        private void GetFeedbackContext()
+        {
+            if (_feedbackContext is null)
+            {
+                try
+                {
+                    _feedbackContext = _tiaPortal.GetFeedbackContext();
+                }
+                catch { }
+            }
+        }
     }
 }

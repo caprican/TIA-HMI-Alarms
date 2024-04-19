@@ -138,6 +138,9 @@
   <data name="Feedback_AlarmsUpdated_Text" xml:space="preserve">
     <value>Alarmes mises à jour</value>
   </data>
+  <data name="Feedback_NoProject_Text" xml:space="preserve">
+    <value>Aucun projet trouvé</value>
+  </data>
   <data name="TaskGenerateCancel" xml:space="preserve">
     <value>La tâche à été annulé par l'utilisateur</value>
   </data>

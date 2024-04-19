@@ -124,6 +124,15 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Aucun projet trouvé.
+        /// </summary>
+        public static string Feedback_NoProject_Text {
+            get {
+                return ResourceManager.GetString("Feedback_NoProject_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à La tâche à été annulé par l&apos;utilisateur.
         /// </summary>
         public static string TaskGenerateCancel {

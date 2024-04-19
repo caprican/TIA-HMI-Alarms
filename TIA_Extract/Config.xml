@@ -7,7 +7,7 @@
   <Product>
     <Name>Alarms builder</Name>
     <Id>SKF_AlarmsBuilder</Id>
-    <Version>1.0</Version>
+    <Version>19.0.1.0</Version>
   </Product>
   <FeatureAssembly>
     <AssemblyInfo>
