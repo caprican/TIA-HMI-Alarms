@@ -9,11 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Extract_V18", "Extract_V18\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extract.Core", "Extract.Core\Extract.Core.csproj", "{34129BD4-5D40-4F83-A3B5-7B8D78AEA13F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{7F054785-483E-4DE5-8CC5-8501A0419BAA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{3AD3C840-D2AE-49CF-AE12-26E1F6A7FE54}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{A4529999-07A5-4F4F-A4E4-0BFBF1ED9820}"
+	ProjectSection(SolutionItems) = preProject
+		Assets\Database template.png = Assets\Database template.png
 	EndProjectSection
 EndProject
 Global
@@ -39,7 +42,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{7F054785-483E-4DE5-8CC5-8501A0419BAA} = {3AD3C840-D2AE-49CF-AE12-26E1F6A7FE54}
+		{A4529999-07A5-4F4F-A4E4-0BFBF1ED9820} = {3AD3C840-D2AE-49CF-AE12-26E1F6A7FE54}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CD9D282C-4DB2-4BED-B3AF-764D13E51E78}

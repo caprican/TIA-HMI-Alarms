@@ -75,10 +75,10 @@ namespace TIA_Extract
         protected override void BuildContextMenuItems(ContextMenuAddInRoot addInRootSubmenu)
         {
             addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_GlobalDb, OnGenerateClick,
-                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.GlobalDB) ? MenuStatus.Enabled : MenuStatus.Disabled);
+                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.GlobalDB || engineeringObject is SimaticSW.PlcBlockUserGroup) ? MenuStatus.Enabled : MenuStatus.Hidden);
 
-            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_UserGroup, OnGenerateClick,
-                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.PlcBlockUserGroup) ? MenuStatus.Enabled : MenuStatus.Disabled);
+            //addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_UserGroup, OnGenerateClick,
+            //    (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.PlcBlockUserGroup) ? MenuStatus.Enabled : MenuStatus.Disabled);
 
             addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_HmiTag, OnGenerateClick,
                 (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is TagTable) ? MenuStatus.Enabled : MenuStatus.Disabled);

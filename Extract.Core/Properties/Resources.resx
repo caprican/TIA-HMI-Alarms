@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BuildAlarmsEnded" xml:space="preserve">
-    <value>Génération des arlarmes terminée</value>
+    <value>Génération des alarmes terminée</value>
   </data>
   <data name="CancelByUser" xml:space="preserve">
     <value>La génération à été annulé par l'utilisateur</value>
   </data>
   <data name="ContextMenu_GlobalDb" xml:space="preserve">
-    <value>Généré depuis bloc de donnée</value>
+    <value>Build Alarms</value>
   </data>
   <data name="ContextMenu_HmiTag" xml:space="preserve">
-    <value>Mettre à jours la table</value>
+    <value>Update Table</value>
   </data>
   <data name="ContextMenu_UserGroup" xml:space="preserve">
     <value>Généré depuis le dossier</value>

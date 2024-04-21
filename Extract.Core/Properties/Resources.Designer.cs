@@ -61,7 +61,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Génération des arlarmes terminée.
+        ///   Recherche une chaîne localisée semblable à Génération des alarmes terminée.
         /// </summary>
         public static string BuildAlarmsEnded {
             get {
@@ -79,7 +79,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Généré depuis bloc de donnée.
+        ///   Recherche une chaîne localisée semblable à Build Alarms.
         /// </summary>
         public static string ContextMenu_GlobalDb {
             get {
@@ -88,7 +88,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Mettre à jours la table.
+        ///   Recherche une chaîne localisée semblable à Update Table.
         /// </summary>
         public static string ContextMenu_HmiTag {
             get {
