@@ -23,6 +23,7 @@ using Siemens.Engineering.SW.Blocks.Interface;
 using Siemens.Engineering.SW.Units;
 
 using System.Text.RegularExpressions;
+using SimaticML;
 
 namespace TIA_Extract
 {
@@ -207,9 +208,8 @@ namespace TIA_Extract
             {
                 var folderName = string.Empty;
                 if (globalDB.Parent is SimaticSW.PlcBlockUserGroup group)
-                {
                     folderName = group.Name;
-                }
+                
                 var plcSoft = GetDeviceSoftware<PlcSoftware>(globalDB);
 
                 if (!globalDB.IsConsistent)
@@ -227,9 +227,8 @@ namespace TIA_Extract
                 try
                 {
                     if (File.Exists(path))
-                    {
                         File.Delete(path);
-                    }
+
                     globalDB.Export(new FileInfo(path), ExportOptions.None);
                 }
                 catch (Exception ex)
@@ -246,21 +245,16 @@ namespace TIA_Extract
                     var deviceGroup = new List<DeviceUserGroup>();
 
                     if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices?.Count > 0)
-                    {
                         devices.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices);
-                    }
+                    
                     if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices?.Count > 0)
-                    {
                         devices.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices);
-                    }
+                    
                     if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups?.Count > 0)
-                    {
                         deviceGroup.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups);
-                    }
+                    
                     if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups?.Count > 0)
-                    {
                         deviceGroup.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups);
-                    }
 
                     do
                     {
@@ -268,7 +262,7 @@ namespace TIA_Extract
                         {
                             devices.AddRange(deviceGroup[0].Devices);
                             deviceGroup.AddRange(deviceGroup[0].Groups);
-                        deviceGroup.RemoveAt(0);
+                            deviceGroup.RemoveAt(0);
                         }
                     } while (deviceGroup.Count > 0);
 
@@ -312,21 +306,16 @@ namespace TIA_Extract
 
                                         var exportTag = new SimaticML.SW.Member { Members = exportDb.Members.ToList() };
                                         foreach (var tagComposition in internalMember.Name.Split('.'))
-                                        {
                                             exportTag = exportTag.Members.FirstOrDefault(f => f.Name == tagComposition);
-                                        }
 
                                         if (exportTag != null)
                                         {
                                             var activeLanguages = new List<Language>();
                                             if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.LanguageSettings?.ActiveLanguages?.Count > 0)
-                                            {
                                                 activeLanguages.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary).LanguageSettings.ActiveLanguages);
-                                            }
+                                            
                                             if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project?.LanguageSettings?.ActiveLanguages?.Count > 0)
-                                            {
                                                 activeLanguages.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.LanguageSettings.ActiveLanguages);
-                                            }
 
                                             switch (exportTag.Datatype)
                                             {
@@ -348,9 +337,7 @@ namespace TIA_Extract
                                                                 break;
                                                             }
                                                             else
-                                                            {
                                                                 alarmClass = hmiUnified.AlarmClasses.Find("Alarm");
-                                                            }
                                                         }
                                                     }
                                                     break;
@@ -367,16 +354,30 @@ namespace TIA_Extract
                                                     else
                                                     {
                                                         exclusiveAccess.Text = $"Création de l'alarme depuis {globalDB.Name}/{exportTag.Name} dans {device.Name}";
-                                                        if(string.IsNullOrEmpty(folderName))
-                                                        {
+
+                                                        if (string.IsNullOrEmpty(folderName))
                                                             tag = hmiUnified.Tags.Create(tagname);
-                                                        }
                                                         else
                                                         {
-                                                            if (!hmiUnified.TagTables.Any(a => a.Name == folderName))
+
+                                                            var tagTables = new List<HmiTagTable>();
+                                                            tagTables.AddRange(hmiUnified.TagTables);
+
+                                                            var tagTablesGroup = new List<HmiTagTableGroup>();
+                                                            tagTablesGroup.AddRange(hmiUnified.TagTableGroups);
+                                                            do
                                                             {
+                                                                if (tagTablesGroup.Count > 0)
+                                                                {
+                                                                    tagTables.AddRange(tagTablesGroup[0].TagTables);
+                                                                    tagTablesGroup.AddRange(tagTablesGroup[0].Groups);
+                                                                }
+                                                                tagTablesGroup.RemoveAt(0);
+                                                            } while (tagTablesGroup.Count > 0);
+
+                                                            if (!tagTables.Any(a => a.Name == folderName))
                                                                 hmiUnified.TagTables.Create(folderName);
-                                                            }
+
                                                             tag = hmiUnified.Tags.Create(tagname, folderName);
                                                         }
                                                     }
@@ -393,8 +394,8 @@ namespace TIA_Extract
                                                     {
                                                         if (alarms.EventText.Items.Find(lang) is MultilingualTextItem multilingualText)
                                                         {
-                                                            var txt = exportTag.Comment.Find(comment => comment.Lang == lang.Culture.Name).Value;
-                                                            multilingualText.Text = $"<body><p>{txt}</p></body>";
+                                                            if (exportTag.Comment.Find(comment => comment.Lang == lang.Culture.Name) is MultiLanguageText txt)
+                                                                multilingualText.Text = $"<body><p>{txt.Value}</p></body>";
                                                         }
                                                     }
                                                     break;

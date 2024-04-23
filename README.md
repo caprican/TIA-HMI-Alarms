@@ -3,7 +3,7 @@ Add-on extract all comments from global database ended by "_Defaut" and build HM
 This add-on is compatible with TIA V18 and V19 for standalone or multiuser projects
 # Usage
 - Declare PLC-HMI Connection.
-- Build all databases message for HMI alarms.![Assets/Database template.png](Assets/Database template.png "Database structure")
+- Build all databases message for HMI alarms.![Database template](https://github.com/caprican/TIA_Extract/assets/55591295/b4a43225-9128-446b-b208-b0602f9e4c00)
 - When start add-on from contextal menu (database or folder), the add-on genere hmi tag, hmi alarm and affect class alarm if struct as tag **[AlarmClass=*"ClassName"*]** or structure name is class alarm name. Origin Fiel is database name.
 # Installation of TIA add-in
 1. Install simatic TIA portal V18 or upper, make sure openness is checked.
