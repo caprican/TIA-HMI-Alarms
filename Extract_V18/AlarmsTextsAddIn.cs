@@ -78,10 +78,10 @@ namespace TIA_Extract
         protected override void BuildContextMenuItems(ContextMenuAddInRoot addInRootSubmenu)
         {
             addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_GlobalDb, OnGenerateClick,
-                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.GlobalDB || engineeringObject is SimaticSW.PlcBlockUserGroup) ? MenuStatus.Enabled : MenuStatus.Hidden);
+                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.GlobalDB) ? MenuStatus.Enabled : MenuStatus.Hidden);
 
-            //addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_UserGroup, OnGenerateClick,
-            //    (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.PlcBlockUserGroup) ? MenuStatus.Enabled : MenuStatus.Disabled);
+            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_GlobalDb, OnGenerateClick,
+                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.PlcBlockUserGroup) ? MenuStatus.Enabled : MenuStatus.Hidden);
 
             addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_HmiTag, OnGenerateClick,
                 (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is TagTable) ? MenuStatus.Enabled : MenuStatus.Disabled);
@@ -128,9 +128,9 @@ namespace TIA_Extract
                             var asUpdateAlarms = false;
                             do
                             {
-                                if (tempGroupList[0].Blocks.Any(block => block is SimaticSW.GlobalDB))
+                                if (tempGroupList[0].Blocks.Where(bloc => bloc is SimaticSW.GlobalDB).Cast<SimaticSW.GlobalDB>() is IEnumerable<SimaticSW.GlobalDB> globalDBs)
                                 {
-                                    foreach (var plcDataBlock in blockGroup.Blocks.Where(bloc => bloc is SimaticSW.GlobalDB).Cast<SimaticSW.GlobalDB>())
+                                    foreach (var plcDataBlock in globalDBs)
                                     {
                                         asUpdateAlarms = true;
                                         BuildAlarms(exclusiveAccess, plcDataBlock, projectPath.Directory.FullName);
@@ -138,11 +138,10 @@ namespace TIA_Extract
                                     }
                                 }
                                 if (tempGroupList[0].Groups.Count > 0)
-                                {
                                     tempGroupList.AddRange(tempGroupList[0].Groups);
-                                }
 
                                 tempGroupList.RemoveAt(0);
+
                             } while (tempGroupList.Count > 0);
 
                             if(!asUpdateAlarms)
@@ -371,8 +370,8 @@ namespace TIA_Extract
                                                                 {
                                                                     tagTables.AddRange(tagTablesGroup[0].TagTables);
                                                                     tagTablesGroup.AddRange(tagTablesGroup[0].Groups);
+                                                                    tagTablesGroup.RemoveAt(0);
                                                                 }
-                                                                tagTablesGroup.RemoveAt(0);
                                                             } while (tagTablesGroup.Count > 0);
 
                                                             if (!tagTables.Any(a => a.Name == folderName))

@@ -3,11 +3,11 @@
   <!--Enter values for Author, Description, AddInVersion, Name, ...-->
   <Author>A. MORELLET</Author>
   <Description>Convert comment from global db to hmi alarms</Description>
-  <AddInVersion>V1.0</AddInVersion>
+  <AddInVersion>V1.1</AddInVersion>
   <Product>
     <Name>Alarms builder</Name>
     <Id>SKF_AlarmsBuilder</Id>
-    <Version>18.0.1.0</Version>
+    <Version>18.0.1.1</Version>
   </Product>
   <FeatureAssembly>
     <AssemblyInfo>
