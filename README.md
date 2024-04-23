@@ -7,7 +7,7 @@ This add-on is compatible with TIA V18 and V19 for standalone or multiuser proje
 - When start add-on from contextal menu (database or folder), the add-on genere hmi tag, hmi alarm and affect class alarm if struct as tag **[AlarmClass=*"ClassName"*]** or structure name is class alarm name. Origin Fiel is database name.
 # Installation of TIA add-in
 1. Install simatic TIA portal V18 or upper, make sure openness is checked.
-2. Right clik "My computer" -> Manage -> System tools -> Local users and groups -> Groups -> Double click ìSiemens TIA Opennessî and add your username.
+2. Right clik "My computer" -> Manage -> System tools -> Local users and groups -> Groups -> Double click ‚ÄúSiemens TIA Openness‚Äù and add your username.
 3. Install Add-Ins by copying the ".addin" file into the "AddIns" folder in the installation directory of the TIA Portal.
 4. Activate or deactivate Add-Ins in the "Add-Ins" task card (Add-Ins are deactivated by default).
 5. Further information on the Add-In such as the author, description or the required authorizations are also displayed in the "Add-Ins" task card. 
