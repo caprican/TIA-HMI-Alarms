@@ -61,7 +61,97 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Génération des alarmes terminée.
+        ///   Recherche une chaîne localisée semblable à on.
+        /// </summary>
+        public static string BuildAlarms_AlarmOn {
+            get {
+                return ResourceManager.GetString("BuildAlarms_AlarmOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Build HMI alarm from.
+        /// </summary>
+        public static string BuildAlarms_BuildAlarmFrom {
+            get {
+                return ResourceManager.GetString("BuildAlarms_BuildAlarmFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Builder non compatible with.
+        /// </summary>
+        public static string BuildAlarms_BuilderNoCompatible {
+            get {
+                return ResourceManager.GetString("BuildAlarms_BuilderNoCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à do not compil.
+        /// </summary>
+        public static string BuildAlarms_CannotCompile {
+            get {
+                return ResourceManager.GetString("BuildAlarms_CannotCompile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Create HMI alarm from.
+        /// </summary>
+        public static string BuildAlarms_CreateAlarm {
+            get {
+                return ResourceManager.GetString("BuildAlarms_CreateAlarm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Extract HMI alarms from.
+        /// </summary>
+        public static string BuildAlarms_ExtractAlarmForm {
+            get {
+                return ResourceManager.GetString("BuildAlarms_ExtractAlarmForm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à No connexion found between.
+        /// </summary>
+        public static string BuildAlarms_NoConnexionDevice {
+            get {
+                return ResourceManager.GetString("BuildAlarms_NoConnexionDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à and.
+        /// </summary>
+        public static string BuildAlarms_NoConnexionDeviceAnd {
+            get {
+                return ResourceManager.GetString("BuildAlarms_NoConnexionDeviceAnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Updayte HMI alarm from.
+        /// </summary>
+        public static string BuildAlarms_UpdateAlarm {
+            get {
+                return ResourceManager.GetString("BuildAlarms_UpdateAlarm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à HMI Alarms updated on.
+        /// </summary>
+        public static string BuildAlarms_UpdateOnDevice {
+            get {
+                return ResourceManager.GetString("BuildAlarms_UpdateOnDevice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à HMI alarm generation completed.
         /// </summary>
         public static string BuildAlarmsEnded {
             get {
@@ -70,7 +160,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à La génération à été annulé par l&apos;utilisateur.
+        ///   Recherche une chaîne localisée semblable à Build canceled by user.
         /// </summary>
         public static string CancelByUser {
             get {
@@ -88,7 +178,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Aucun DB d&apos;alarmes trouvé dans le dossier.
+        ///   Recherche une chaîne localisée semblable à No alarm DB found in folder.
         /// </summary>
         public static string EmptyGlobalDb {
             get {
@@ -97,7 +187,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Alarmes mises à jour.
+        ///   Recherche une chaîne localisée semblable à Alarms updated.
         /// </summary>
         public static string Feedback_AlarmsUpdated_Text {
             get {
@@ -106,7 +196,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Aucun projet trouvé.
+        ///   Recherche une chaîne localisée semblable à No projects found.
         /// </summary>
         public static string Feedback_NoProject_Text {
             get {
@@ -115,7 +205,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à La tâche à été annulé par l&apos;utilisateur.
+        ///   Recherche une chaîne localisée semblable à Tack canceled by user.
         /// </summary>
         public static string TaskGenerateCancel {
             get {

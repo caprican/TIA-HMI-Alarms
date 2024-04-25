@@ -118,24 +118,54 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BuildAlarmsEnded" xml:space="preserve">
-    <value>Génération des alarmes terminée</value>
+    <value>HMI alarm generation completed</value>
+  </data>
+  <data name="BuildAlarms_AlarmOn" xml:space="preserve">
+    <value>on</value>
+  </data>
+  <data name="BuildAlarms_BuildAlarmFrom" xml:space="preserve">
+    <value>Build HMI alarm from</value>
+  </data>
+  <data name="BuildAlarms_BuilderNoCompatible" xml:space="preserve">
+    <value>Builder non compatible with</value>
+  </data>
+  <data name="BuildAlarms_CannotCompile" xml:space="preserve">
+    <value>do not compil</value>
+  </data>
+  <data name="BuildAlarms_CreateAlarm" xml:space="preserve">
+    <value>Create HMI alarm from</value>
+  </data>
+  <data name="BuildAlarms_ExtractAlarmForm" xml:space="preserve">
+    <value>Extract HMI alarms from</value>
+  </data>
+  <data name="BuildAlarms_NoConnexionDevice" xml:space="preserve">
+    <value>No connexion found between</value>
+  </data>
+  <data name="BuildAlarms_NoConnexionDeviceAnd" xml:space="preserve">
+    <value>and</value>
+  </data>
+  <data name="BuildAlarms_UpdateAlarm" xml:space="preserve">
+    <value>Updayte HMI alarm from</value>
+  </data>
+  <data name="BuildAlarms_UpdateOnDevice" xml:space="preserve">
+    <value>HMI Alarms updated on</value>
   </data>
   <data name="CancelByUser" xml:space="preserve">
-    <value>La génération à été annulé par l'utilisateur</value>
+    <value>Build canceled by user</value>
   </data>
   <data name="ContextMenu_GlobalDb" xml:space="preserve">
     <value>Build</value>
   </data>
   <data name="EmptyGlobalDb" xml:space="preserve">
-    <value>Aucun DB d'alarmes trouvé dans le dossier</value>
+    <value>No alarm DB found in folder</value>
   </data>
   <data name="Feedback_AlarmsUpdated_Text" xml:space="preserve">
-    <value>Alarmes mises à jour</value>
+    <value>Alarms updated</value>
   </data>
   <data name="Feedback_NoProject_Text" xml:space="preserve">
-    <value>Aucun projet trouvé</value>
+    <value>No projects found</value>
   </data>
   <data name="TaskGenerateCancel" xml:space="preserve">
-    <value>La tâche à été annulé par l'utilisateur</value>
+    <value>Tack canceled by user</value>
   </data>
 </root>

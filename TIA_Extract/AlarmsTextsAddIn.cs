@@ -24,8 +24,6 @@ using Siemens.Engineering.SW.Units;
 
 using System.Text.RegularExpressions;
 using SimaticML;
-using Siemens.Engineering.Settings;
-using System.Globalization;
 
 namespace TIA_Extract
 {
@@ -44,6 +42,7 @@ namespace TIA_Extract
 
         private const string databaseMark = "_Defauts";
         private const string userFolder = "UserFiles";
+        private const string alarmsClassName = "Alarm";
 
         private FeedbackContext _feedbackContext;
 
@@ -59,10 +58,9 @@ namespace TIA_Extract
         public AlarmsTextsAddIn(TiaPortal tiaPortal) : base(s_DisplayNameOfAddIn)
         {
             _tiaPortal = tiaPortal;
-            GetFeedbackContext();
 
             //#if DEBUG
-            //            Core.Properties.Resources.Culture = new CultureInfo("en-US");
+            //  Core.Properties.Resources.Culture = new CultureInfo("en-US");
             //#else
             //  TiaPortalSettingsFolder generalSettingsFolder = _tiaPortal.SettingsFolders.Find("General");
             //  TiaPortalSetting UILanguageSetting = generalSettingsFolder.Settings.Find("UserInterfaceLanguage");
@@ -97,11 +95,9 @@ namespace TIA_Extract
             //  Disabled = Visible but not executable
             //  Hidden   = Item will not be shown
 
-            var select1 = menuSelectionProvider.GetSelection<SimaticSW.GlobalDB>();
-            var select2 = menuSelectionProvider.GetSelection<SimaticSW.PlcBlockUserGroup>();
-            var select3 = menuSelectionProvider.GetSelection<TagTable>();
-
-            if(select1.Any() || select2.Any() || select3.Any())
+            if(menuSelectionProvider.GetSelection<SimaticSW.GlobalDB>().Any() ||
+               menuSelectionProvider.GetSelection<SimaticSW.PlcBlockUserGroup>().Any() ||
+               menuSelectionProvider.GetSelection<TagTable>().Any())
                 return MenuStatus.Enabled;
             else
                 return MenuStatus.Hidden;
@@ -149,14 +145,13 @@ namespace TIA_Extract
                             do
                             {
                                 if (tempGroupList[0].Blocks.Where(bloc => bloc is SimaticSW.GlobalDB).Cast<SimaticSW.GlobalDB>() is IEnumerable<SimaticSW.GlobalDB> globalDBs)
-                                {
                                     foreach (var plcDataBlock in globalDBs)
                                     {
                                         asUpdateAlarms = true;
                                         BuildAlarms(exclusiveAccess, plcDataBlock, projectPath.Directory.FullName);
                                         _feedbackContext.Log(NotificationIcon.Success, Extract.Core.Properties.Resources.Feedback_AlarmsUpdated_Text);
                                     }
-                                }
+                                
                                 if (tempGroupList[0].Groups.Count > 0)
                                     tempGroupList.AddRange(tempGroupList[0].Groups);
                                 
@@ -188,9 +183,8 @@ namespace TIA_Extract
                                     {
                                         devices.AddRange(deviceGroup[0].Devices);
                                         deviceGroup.AddRange(deviceGroup[0].Groups);
-                                        deviceGroup.RemoveAt(0);
                                     }
-
+                                    deviceGroup.RemoveAt(0);
                                 } while (deviceGroup.Count > 0);
 
                                 foreach (var device in devices)
@@ -200,13 +194,11 @@ namespace TIA_Extract
                                     {
                                         var group = plcSoftware.BlockGroup.Groups.Find(hmiTagTable.Name);
                                         foreach (var plcGroupBlock in group.Blocks.Where(bloc => bloc.Name.EndsWith(databaseMark)))
-                                        {
                                             if (plcGroupBlock is SimaticSW.GlobalDB dB)
                                             {
                                                 BuildAlarms(exclusiveAccess, dB, projectPath.Directory.FullName);
                                                 _feedbackContext.Log(NotificationIcon.Success, Extract.Core.Properties.Resources.Feedback_AlarmsUpdated_Text);
                                             }
-                                        }
                                     }
                                 }
                             }
@@ -219,9 +211,9 @@ namespace TIA_Extract
 
         public void BuildAlarms(ExclusiveAccess exclusiveAccess, SimaticSW.GlobalDB globalDB, string projectDirectoryPath)
         {
-            _feedbackContext.Log(NotificationIcon.Information, $"Extraction des alarmes depuis {globalDB.Name}");
+            _feedbackContext.Log(NotificationIcon.Information, $"{Extract.Core.Properties.Resources.BuildAlarms_ExtractAlarmForm} {globalDB.Name}");
 
-            exclusiveAccess.Text = $"Génération des messages depuis {globalDB.Name}";
+            exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_BuildAlarmFrom} {globalDB.Name}";
 
             if (globalDB.Name.EndsWith(databaseMark))
             {
@@ -236,7 +228,7 @@ namespace TIA_Extract
                     var comp = globalDB.GetService<ICompilable>();
                     if (comp.Compile().State != CompilerResultState.Success)
                     {
-                        _feedbackContext.Log(NotificationIcon.Error, $"{globalDB.Name} n'est pas compilable.");
+                        _feedbackContext.Log(NotificationIcon.Error, $"{globalDB.Name} {Extract.Core.Properties.Resources.BuildAlarms_CannotCompile}");
                         return;
                     }
                 }
@@ -301,18 +293,18 @@ namespace TIA_Extract
                             switch (softContainer?.Software)
                             {
                                 case HmiTarget hmi:
-                                    _feedbackContext.Log(NotificationIcon.Information, $"Générateur non compatible avec {device.Name}.");
+                                    _feedbackContext.Log(NotificationIcon.Information, $"{Extract.Core.Properties.Resources.BuildAlarms_BuilderNoCompatible} {device.Name}.");
                                     break;
                                 case HmiSoftware hmiUnified:
                                     var connexion = hmiUnified.Connections.FirstOrDefault(con => con.Partner == plcSoft.Name);
 
                                     if (connexion is null)
                                     {
-                                        _feedbackContext.Log(NotificationIcon.Information, $"Pas de connexion trouvée entre {device.Name} et {plcSoft.Name}.");
+                                        _feedbackContext.Log(NotificationIcon.Information, $" {device.Name} et {plcSoft.Name}.");
                                         break;
                                     }
 
-                                    var alarmClass = hmiUnified.AlarmClasses.Find("Alarm");
+                                    var alarmClass = hmiUnified.AlarmClasses.Find(alarmsClassName);
 
                                     foreach (var internalMember in globalDB.Interface.Members)
                                     {
@@ -355,7 +347,7 @@ namespace TIA_Extract
                                                                 break;
                                                             }
                                                             else
-                                                                alarmClass = hmiUnified.AlarmClasses.Find("Alarm");
+                                                                alarmClass = hmiUnified.AlarmClasses.Find(alarmsClassName);
                                                         }
                                                     }
                                                     break;
@@ -367,17 +359,16 @@ namespace TIA_Extract
                                                     if (hmiUnified.Tags.Find(tagname) is HmiTag hmiTag)
                                                     {
                                                         tag = hmiTag;
-                                                        exclusiveAccess.Text = $"Mise à jour de l'alarme depuis {globalDB.Name}/{exportTag.Name} dans {device.Name}";
+                                                        exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_UpdateAlarm} {globalDB.Name}/{exportTag.Name} {Extract.Core.Properties.Resources.BuildAlarms_AlarmOn} {device.Name}";
                                                     }
                                                     else
                                                     {
-                                                        exclusiveAccess.Text = $"Création de l'alarme depuis {globalDB.Name}/{exportTag.Name} dans {device.Name}";
+                                                        exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_CreateAlarm} {globalDB.Name}/{exportTag.Name} {Extract.Core.Properties.Resources.BuildAlarms_AlarmOn} {device.Name}";
 
                                                         if (string.IsNullOrEmpty(folderName))
                                                             tag = hmiUnified.Tags.Create(tagname);
                                                         else
                                                         {
-
                                                             var tagTables = new List<HmiTagTable>();
                                                             tagTables.AddRange(hmiUnified.TagTables);
 
@@ -420,7 +411,7 @@ namespace TIA_Extract
                                             }
                                         }
                                     }
-                                    _feedbackContext.Log(NotificationIcon.Success, $"Alarmes mis à jours sur {device.Name}");
+                                    _feedbackContext.Log(NotificationIcon.Success, $"{Extract.Core.Properties.Resources.BuildAlarms_UpdateOnDevice} {device.Name}");
 
                                     break;
                             }

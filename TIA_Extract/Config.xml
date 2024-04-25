@@ -15,7 +15,9 @@
       <Pdb>Extract_V19.pdb</Pdb>
     </AssemblyInfo>
   </FeatureAssembly>
+  
   <DisplayInMultiuser />
+  
   <AdditionalAssemblies>
     <AssemblyInfo>
       <Assembly>Extract.Core.dll</Assembly>
