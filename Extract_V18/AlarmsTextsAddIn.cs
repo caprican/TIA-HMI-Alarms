@@ -77,17 +77,35 @@ namespace TIA_Extract
         /// </param>
         protected override void BuildContextMenuItems(ContextMenuAddInRoot addInRootSubmenu)
         {
-            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_GlobalDb, OnGenerateClick,
-                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.GlobalDB) ? MenuStatus.Enabled : MenuStatus.Hidden);
-
-            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_GlobalDb, OnGenerateClick,
-                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is SimaticSW.PlcBlockUserGroup) ? MenuStatus.Enabled : MenuStatus.Hidden);
-
-            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_HmiTag, OnGenerateClick,
-                (menuSelectionProvider) => menuSelectionProvider.GetSelection().Any(engineeringObject => engineeringObject is TagTable) ? MenuStatus.Enabled : MenuStatus.Disabled);
+            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_GlobalDb, OnGenerate, OnCanGenerate);
         }
 
-        private void OnGenerateClick(MenuSelectionProvider<IEngineeringObject> menuSelectionProvider)
+        /// <summary>
+        /// Called when mouse is over the context menu item 'Action 1'.
+        /// The returned value will be used to enable or disable it.
+        /// </summary>
+        /// <param name="menuSelectionProvider">
+        /// Here, the same generic type as was used in addInRootSubmenu.Items.AddActionItem must be used
+        /// (here it has to be IEngineeringObject)
+        /// </param>
+        private MenuStatus OnCanGenerate(MenuSelectionProvider<IEngineeringObject> menuSelectionProvider)
+        {
+            // MenuStatus
+            //  Enabled  = Visible
+            //  Disabled = Visible but not executable
+            //  Hidden   = Item will not be shown
+
+            var select1 = menuSelectionProvider.GetSelection<SimaticSW.GlobalDB>();
+            var select2 = menuSelectionProvider.GetSelection<SimaticSW.PlcBlockUserGroup>();
+            var select3 = menuSelectionProvider.GetSelection<TagTable>();
+
+            if (select1.Any() || select2.Any() || select3.Any())
+                return MenuStatus.Enabled;
+            else
+                return MenuStatus.Hidden;
+        }
+
+        private void OnGenerate(MenuSelectionProvider<IEngineeringObject> menuSelectionProvider)
         {
             GetFeedbackContext();
 

@@ -42,6 +42,9 @@
     <SiemensEngineeringPath Condition="'$(SiemensEngineeringPath)' == ''">$([MSBuild]::GetRegistryValueFromView(`HKEY_LOCAL_MACHINE\SOFTWARE\Siemens\Automation\_InstalledSW\TIAP19\EditionMain`, `Path`, `AutoDetect`, RegistryView.Registry64, RegistryView.Registry32))</SiemensEngineeringPath>
     <TiaPortalLocation Condition="'$(TiaPortalLocation)' == '' AND '$(SiemensEngineeringPath)' != 'AutoDetect'">$([System.IO.Path]::GetFullPath('$(SiemensEngineeringPath)'))</TiaPortalLocation>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Condition="'$(TiaPortalLocation)' != ''" Include="Siemens.Engineering.AddIn">
       <HintPath>$(TiaPortalLocation)\PublicAPI\V19.AddIn\Siemens.Engineering.AddIn.dll</HintPath>

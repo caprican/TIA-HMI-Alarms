@@ -79,29 +79,11 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Build Alarms.
+        ///   Recherche une chaîne localisée semblable à Build.
         /// </summary>
         public static string ContextMenu_GlobalDb {
             get {
                 return ResourceManager.GetString("ContextMenu_GlobalDb", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Update Table.
-        /// </summary>
-        public static string ContextMenu_HmiTag {
-            get {
-                return ResourceManager.GetString("ContextMenu_HmiTag", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Généré depuis le dossier.
-        /// </summary>
-        public static string ContextMenu_UserGroup {
-            get {
-                return ResourceManager.GetString("ContextMenu_UserGroup", resourceCulture);
             }
         }
         

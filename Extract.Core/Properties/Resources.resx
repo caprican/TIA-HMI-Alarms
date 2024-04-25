@@ -124,13 +124,7 @@
     <value>La génération à été annulé par l'utilisateur</value>
   </data>
   <data name="ContextMenu_GlobalDb" xml:space="preserve">
-    <value>Build Alarms</value>
-  </data>
-  <data name="ContextMenu_HmiTag" xml:space="preserve">
-    <value>Update Table</value>
-  </data>
-  <data name="ContextMenu_UserGroup" xml:space="preserve">
-    <value>Généré depuis le dossier</value>
+    <value>Build</value>
   </data>
   <data name="EmptyGlobalDb" xml:space="preserve">
     <value>Aucun DB d'alarmes trouvé dans le dossier</value>

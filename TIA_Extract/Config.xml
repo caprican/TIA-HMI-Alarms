@@ -3,11 +3,11 @@
   <!--Enter values for Author, Description, AddInVersion, Name, ...-->
   <Author>A. MORELLET</Author>
   <Description>Convert comment from global db to hmi alarms</Description>
-  <AddInVersion>V1.1</AddInVersion>
+  <AddInVersion>V1.2</AddInVersion>
   <Product>
     <Name>Alarms builder</Name>
-    <Id>SKF_AlarmsBuilder</Id>
-    <Version>19.0.1.1</Version>
+    <Id>906ABF3F-C4CA-45F7-98F0-2E78F9F3D48B</Id>
+    <Version>19.0.1.2</Version>
   </Product>
   <FeatureAssembly>
     <AssemblyInfo>
@@ -34,27 +34,27 @@
     </TIAPermissions>
 
     <SecurityPermissions>
-      <System.Security.Permissions.SecurityPermission.UnmanagedCode/>
+      <!--<System.Security.Permissions.SecurityPermission.UnmanagedCode/>-->
       <System.Security.Permissions.FileDialogPermission/>
       <System.Security.Permissions.UIPermission/>
-      <System.Security.Permissions.MediaPermission/>
-      <Siemens.Engineering.AddIn.Permissions.ProcessStartPermission/>
-      <System.Net.WebPermission/>
-      <System.Security.Permissions.KeyContainerPermission/>
-      <System.Net.SocketPermission/>
+      <!--<System.Security.Permissions.MediaPermission/>-->
+      <!--<Siemens.Engineering.AddIn.Permissions.ProcessStartPermission/>-->
+      <!--<System.Net.WebPermission/>-->
+      <!--<System.Security.Permissions.KeyContainerPermission/>-->
+      <!--<System.Net.SocketPermission/>-->
       <!--<System.Data.Odbc.OdbcPermission/>-->
-      <System.Security.Permissions.WebBrowserPermission/>
-      <System.Net.NetworkInformation.NetworkInformationPermission/>
+      <!--<System.Security.Permissions.WebBrowserPermission/>-->
+      <!--<System.Net.NetworkInformation.NetworkInformationPermission/>-->
       <System.Security.Permissions.StorePermission/>
-      <System.Configuration.ConfigurationPermission/>
+      <!--<System.Configuration.ConfigurationPermission/>-->
       <System.Security.Permissions.FileIOPermission/>
       <System.Diagnostics.EventLogPermission/>
       <!--<System.Drawing.Printing.PrintingPermission/>-->
       <System.Security.Permissions.IsolatedStorageFilePermission/>
       <System.Data.OleDb.OleDbPermission/>
-      <System.Security.Permissions.RegistryPermission/>
-      <System.Data.SqlClient.SqlClientPermission/>
-      <System.Security.Permissions.EnvironmentPermission/>
+      <!--<System.Security.Permissions.RegistryPermission/>-->
+      <!--<System.Data.SqlClient.SqlClientPermission/>-->
+      <!--<System.Security.Permissions.EnvironmentPermission/>-->
       <!--<System.Net.Mail.SmtpPermission/>-->
     </SecurityPermissions>
   </RequiredPermissions>
