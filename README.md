@@ -4,7 +4,10 @@ This add-on is compatible with TIA V18 and V19 for standalone or multiuser proje
 # Usage
 - Declare PLC-HMI Connection.
 - Build all databases message for HMI alarms.![Database template](https://github.com/caprican/TIA_Extract/assets/55591295/b4a43225-9128-446b-b208-b0602f9e4c00)
-- When start add-on from contextal menu (database or folder), the add-on genere hmi tag, hmi alarm and affect class alarm if struct as tag **[AlarmClass=*"ClassName"*]** or structure name is class alarm name. Origin Fiel is database name.
+- When start add-on from contextal menu (database or folder), the add-on genere hmi tag, hmi alarm and affect class alarm if struct as pattern **[AlarmClass=*"ClassName"*]** or structure name is class alarm name. Origin Fiel is database name without extension. By default class alarm is **Alarm**
+- The addon settings can be modified from the settings menu :
+![Capture d'écran 2024-05-06 074111](https://github.com/caprican/TIA-HMI-Alarms/assets/55591295/a68813f4-509d-4fb5-b7b3-171d27358734)
+
 # Installation of TIA add-in
 1. Install simatic TIA portal V18 or upper, make sure openness is checked.
 2. Right clik "My computer" -> Manage -> System tools -> Local users and groups -> Groups -> Double click “Siemens TIA Openness” and add your username.
