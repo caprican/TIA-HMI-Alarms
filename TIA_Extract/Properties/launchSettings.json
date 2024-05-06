@@ -4,11 +4,6 @@
       "commandName": "Executable",
       "executablePath": "$(TiaPortalLocation)\\PublicAPI\\V19.AddIn\\Siemens.Engineering.AddIn.DebugStarter.exe",
       "commandLineArgs": "$(ProjectDir)$(OutDir)Extract_V19.addin"
-    },
-    "Publish Add-in": {
-      "commandName": "Executable",
-      "executablePath": "$(TiaPortalLocation)\\PublicAPI\\V19.AddIn\\Siemens.Engineering.AddIn.Publisher.exe",
-      "commandLineArgs": "-f $(SolutionDir)$(ProjectName)\\Config.xml -v -c"
     }
   }
 }

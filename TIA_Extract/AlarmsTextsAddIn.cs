@@ -24,6 +24,8 @@ using Siemens.Engineering.SW.Units;
 
 using System.Text.RegularExpressions;
 using SimaticML;
+using System.Globalization;
+using TIA_Extract.Utility;
 
 namespace TIA_Extract
 {
@@ -35,16 +37,21 @@ namespace TIA_Extract
         /// </summary>
         private readonly TiaPortal _tiaPortal;
 
+        private Settings _settings;
+
         /// <summary>
         /// The display name of the Add-In.
         /// </summary>
         private const string s_DisplayNameOfAddIn = "Alarms HMI";
 
-        private const string databaseMark = "_Defauts";
         private const string userFolder = "UserFiles";
-        private const string alarmsClassName = "Alarm";
 
         private FeedbackContext _feedbackContext;
+
+        /// <summary>
+        /// Current application GUI - window
+        /// </summary>
+        public static Extract_UI.MainWindow MainWindow;
 
         /// <summary>
         /// The constructor of the AddIn.
@@ -78,6 +85,7 @@ namespace TIA_Extract
         protected override void BuildContextMenuItems(ContextMenuAddInRoot addInRootSubmenu)
         {
             addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_GlobalDb, OnGenerate, OnCanGenerate);
+            addInRootSubmenu.Items.AddActionItem<IEngineeringObject>(Extract.Core.Properties.Resources.ContextMenu_Settings, OnSettings);
         }
 
         /// <summary>
@@ -106,6 +114,7 @@ namespace TIA_Extract
         private void OnGenerate(MenuSelectionProvider<IEngineeringObject> menuSelectionProvider)
         {
             GetFeedbackContext();
+            _settings = Settings.Load();
 
             if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary) is null && _tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project is null)
             {
@@ -193,7 +202,7 @@ namespace TIA_Extract
                                     if (plcSoftware.Name == connection.Partner)
                                     {
                                         var group = plcSoftware.BlockGroup.Groups.Find(hmiTagTable.Name);
-                                        foreach (var plcGroupBlock in group.Blocks.Where(bloc => bloc.Name.EndsWith(databaseMark)))
+                                        foreach (var plcGroupBlock in group.Blocks.Where(bloc => bloc.Name.EndsWith(_settings.BlockExtension)))
                                             if (plcGroupBlock is SimaticSW.GlobalDB dB)
                                             {
                                                 BuildAlarms(exclusiveAccess, dB, projectPath.Directory.FullName);
@@ -215,8 +224,22 @@ namespace TIA_Extract
 
             exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_BuildAlarmFrom} {globalDB.Name}";
 
-            if (globalDB.Name.EndsWith(databaseMark))
+            if (globalDB.Name.EndsWith(_settings.BlockExtension))
             {
+                var referenceCulture = new List<CultureInfo>();
+
+                if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary) != null)
+                    referenceCulture.Add(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.LanguageSettings?.ReferenceLanguage?.Culture);
+                if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary) != null)
+                    referenceCulture.Add(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.LanguageSettings.ReferenceLanguage.Culture);
+
+                var activeLanguages = new List<Language>();
+                if (_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.LanguageSettings?.ActiveLanguages?.Count > 0)
+                    activeLanguages.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary).LanguageSettings.ActiveLanguages);
+
+                if (_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project?.LanguageSettings?.ActiveLanguages?.Count > 0)
+                    activeLanguages.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.LanguageSettings.ActiveLanguages);
+
                 var folderName = string.Empty;
                 if (globalDB.Parent is SimaticSW.PlcBlockUserGroup group)
                     folderName = group.Name;
@@ -234,195 +257,208 @@ namespace TIA_Extract
                 }
 
                 var path = Path.Combine(projectDirectoryPath, userFolder, globalDB.Name + ".xml");
-
-                try
-                {
-                    if (File.Exists(path))
-                        File.Delete(path);
-                    
-                    globalDB.Export(new FileInfo(path), ExportOptions.None);
-                }
-                catch (Exception ex)
-                {
-                    _feedbackContext.Log(NotificationIcon.Error, ex.Message);
-                    return;
-                }
+                Util.ExportBlock(globalDB, path, _feedbackContext);
 
                 var serializer = new XmlSerializer(typeof(SimaticML.Document));
                 var myFile = new FileStream(path, FileMode.Open);
-                if (serializer.Deserialize(myFile) is SimaticML.Document document && document.SWBlocks is SimaticML.SW.Blocks.GlobalDB Db)
-                {
-                    var devices = new List<Device>();
-                    var deviceGroup = new List<DeviceUserGroup>();
-
-                    if(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices?.Count > 0)
-                        devices.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices);
-                    
-                    if(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices?.Count > 0)
-                        devices.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices);
-                    
-                    if(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups?.Count > 0)
-                        deviceGroup.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups);
-                    
-                    if(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups?.Count > 0)
-                        deviceGroup.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups);
-
-                    do
+                if (serializer.Deserialize(myFile) is SimaticML.Document document)
+                    foreach (var Db in document.Items.Where(sw => sw is SimaticML.SW.Blocks.GlobalDB).Cast<SimaticML.SW.Blocks.GlobalDB>())
                     {
-                        if (deviceGroup.Count > 0)
-                        {
-                            devices.AddRange(deviceGroup[0].Devices);
-                            deviceGroup.AddRange(deviceGroup[0].Groups);
-                            deviceGroup.RemoveAt(0);
-                        }
-                    } while (deviceGroup.Count > 0);
+                        var devices = new List<Device>();
+                        var deviceGroup = new List<DeviceUserGroup>();
 
-                    foreach (var device in devices)
-                    {
-                        foreach (var deviceItem in device.DeviceItems)
+                        if(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices?.Count > 0)
+                            devices.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.Devices);
+                    
+                        if(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices?.Count > 0)
+                            devices.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.Devices);
+                    
+                        if(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups?.Count > 0)
+                            deviceGroup.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.DeviceGroups);
+                    
+                        if(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups?.Count > 0)
+                            deviceGroup.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.DeviceGroups);
+
+                        do
                         {
-                            if (exclusiveAccess.IsCancellationRequested)
+                            if (deviceGroup.Count > 0)
                             {
-                                _feedbackContext.Log(NotificationIcon.Information, Extract.Core.Properties.Resources.TaskGenerateCancel);
-                                return;
+                                devices.AddRange(deviceGroup[0].Devices);
+                                deviceGroup.AddRange(deviceGroup[0].Groups);
+                                deviceGroup.RemoveAt(0);
                             }
+                        } while (deviceGroup.Count > 0);
 
-                            var exportDb = Db.Attributes.Interface.Sections[0];
-
-                            var softContainer = deviceItem.GetService<SoftwareContainer>();
-                            switch (softContainer?.Software)
+                        foreach (var device in devices)
+                        {
+                            foreach (var deviceItem in device.DeviceItems)
                             {
-                                case HmiTarget hmi:
-                                    _feedbackContext.Log(NotificationIcon.Information, $"{Extract.Core.Properties.Resources.BuildAlarms_BuilderNoCompatible} {device.Name}.");
-                                    break;
-                                case HmiSoftware hmiUnified:
-                                    var connexion = hmiUnified.Connections.FirstOrDefault(con => con.Partner == plcSoft.Name);
+                                if (exclusiveAccess.IsCancellationRequested)
+                                {
+                                    _feedbackContext.Log(NotificationIcon.Information, Extract.Core.Properties.Resources.TaskGenerateCancel);
+                                    return;
+                                }
 
-                                    if (connexion is null)
-                                    {
-                                        _feedbackContext.Log(NotificationIcon.Information, $" {device.Name} et {plcSoft.Name}.");
+                                var exportDb = Db.AttributeList.Interface.Sections.FirstOrDefault(section => section.Name == SimaticML.SW.InterfaceSections.SectionName_TE.Static);
+
+                                var softContainer = deviceItem.GetService<SoftwareContainer>();
+                                switch (softContainer?.Software)
+                                {
+                                    case HmiTarget hmi:
+                                        _feedbackContext.Log(NotificationIcon.Information, $"{Extract.Core.Properties.Resources.BuildAlarms_BuilderNoCompatible} {device.Name}.");
                                         break;
-                                    }
+                                    case HmiSoftware hmiUnified:
+                                        var connexion = hmiUnified.Connections.FirstOrDefault(con => con.Partner == plcSoft.Name);
 
-                                    var alarmClass = hmiUnified.AlarmClasses.Find(alarmsClassName);
-
-                                    foreach (var internalMember in globalDB.Interface.Members)
-                                    {
-                                        if (exclusiveAccess.IsCancellationRequested)
+                                        if (connexion is null)
                                         {
-                                            _feedbackContext.Log(NotificationIcon.Information, Extract.Core.Properties.Resources.CancelByUser);
-                                            return;
+                                            _feedbackContext.Log(NotificationIcon.Information, $" {device.Name} et {plcSoft.Name}.");
+                                            break;
                                         }
 
-                                        var exportTag = new SimaticML.SW.Member { Members = exportDb.Members.ToList() };
-                                        foreach (var tagComposition in internalMember.Name.Split('.'))
-                                            exportTag = exportTag.Members.FirstOrDefault(f => f.Name == tagComposition);
+                                        var alarmClass = hmiUnified.AlarmClasses.Find(_settings.DefaultAlarmsClass);
 
-                                        if (exportTag != null)
+                                        foreach (var internalMember in globalDB.Interface.Members)
                                         {
-                                            var activeLanguages = new List<Language>();
-                                            if(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary)?.LanguageSettings?.ActiveLanguages?.Count > 0)
-                                                activeLanguages.AddRange(_tiaPortal.Projects.FirstOrDefault(x => x.IsPrimary).LanguageSettings.ActiveLanguages);
-
-                                            if(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project?.LanguageSettings?.ActiveLanguages?.Count > 0)
-                                                activeLanguages.AddRange(_tiaPortal.LocalSessions.FirstOrDefault(x => x.Project.IsPrimary)?.Project.LanguageSettings.ActiveLanguages);
-
-                                            switch (exportTag.Datatype)
+                                            if (exclusiveAccess.IsCancellationRequested)
                                             {
-                                                case "Struct":
-                                                    foreach (var lang in activeLanguages)
-                                                    {
-                                                        var txt = exportTag.Comment.Find(comment => comment.Lang == lang.Culture.Name).Value;
-                                                        if (!string.IsNullOrEmpty(txt))
+                                                _feedbackContext.Log(NotificationIcon.Information, Extract.Core.Properties.Resources.CancelByUser);
+                                                return;
+                                            }
+
+                                            if (GetExportMember(internalMember, exportDb.Member) is SimaticML.SW.InterfaceSections.Member_T exportTag)
+                                            {
+                                                switch (exportTag.Datatype)
+                                                {
+                                                    case "Struct":
+
+                                                        foreach (var lang in referenceCulture)
                                                         {
-                                                            var match = Regex.Match(txt, @"\[AlarmClass=(.+?)\]", RegexOptions.IgnoreCase);
-                                                            if (match.Success && hmiUnified.AlarmClasses.Find(match.Groups[1].Value) is HmiAlarmClass groupAlarmClass)
+                                                            var txt = GetCommentText(lang, exportTag);
+                                                            if (!string.IsNullOrEmpty(txt))
                                                             {
-                                                                alarmClass = groupAlarmClass;
-                                                                break;
+                                                                var match = Regex.Match(txt, @"\[AlarmClass=(.+?)\]", RegexOptions.IgnoreCase);
+                                                                if (match.Success && hmiUnified.AlarmClasses.Find(match.Groups[1].Value) is HmiAlarmClass groupAlarmClass)
+                                                                {
+                                                                    alarmClass = groupAlarmClass;
+                                                                    break;
+                                                                }
+                                                                else if (hmiUnified.AlarmClasses.Find(exportTag.Name) is HmiAlarmClass groupAlarmClass2)
+                                                                {
+                                                                    alarmClass = groupAlarmClass2;
+                                                                    break;
+                                                                }
+                                                                else
+                                                                    alarmClass = hmiUnified.AlarmClasses.Find(_settings.DefaultAlarmsClass);
                                                             }
-                                                            else if (hmiUnified.AlarmClasses.Find(exportTag.Name) is HmiAlarmClass groupAlarmClass2)
-                                                            {
-                                                                alarmClass = groupAlarmClass2;
-                                                                break;
-                                                            }
-                                                            else
-                                                                alarmClass = hmiUnified.AlarmClasses.Find(alarmsClassName);
                                                         }
-                                                    }
-                                                    break;
-                                                case "Bool":
-                                                    var tagname = internalMember.Name.Replace(".", "_");
-                                                    tagname = $"{globalDB.Name.Replace(databaseMark, string.Empty)}_{tagname}";
+                                                        break;
+                                                    case "Bool":
+                                                        var tagname = internalMember.Name.Replace(".", "_");
+                                                        if(_settings.SimplifyTagname)
+                                                            tagname = $"{globalDB.Name.Replace(_settings.BlockExtension, string.Empty)}_{tagname}";
 
-                                                    HmiTag tag;
-                                                    if (hmiUnified.Tags.Find(tagname) is HmiTag hmiTag)
-                                                    {
-                                                        tag = hmiTag;
-                                                        exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_UpdateAlarm} {globalDB.Name}/{exportTag.Name} {Extract.Core.Properties.Resources.BuildAlarms_AlarmOn} {device.Name}";
-                                                    }
-                                                    else
-                                                    {
-                                                        exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_CreateAlarm} {globalDB.Name}/{exportTag.Name} {Extract.Core.Properties.Resources.BuildAlarms_AlarmOn} {device.Name}";
+                                                        HmiTag tag;
+                                                        var plcTag = globalDB.Name.Contains(' ') ? $"\"{globalDB.Name}\"" : globalDB.Name;
+                                                        foreach(var item in internalMember.Name.Split('.'))
+                                                        {
+                                                            if (item.Contains(" "))
+                                                                plcTag += $".\"{item}\"";
+                                                            else
+                                                                plcTag += $".{item}";
+                                                        }
 
-                                                        if (string.IsNullOrEmpty(folderName))
-                                                            tag = hmiUnified.Tags.Create(tagname);
+                                                        if(hmiUnified.Tags.FirstOrDefault(f => f.PlcTag == plcTag) is HmiTag hmiTag)
+                                                        {
+                                                            tag = hmiTag;
+                                                            if(tag.Name != tagname)
+                                                            {
+                                                                var oldAlarm = hmiUnified.DiscreteAlarms.Find(tag.Name);
+                                                                oldAlarm.Delete();
+
+                                                                tag.Name = tagname;
+                                                            }
+                                                            exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_UpdateAlarm} {globalDB.Name}/{exportTag.Name} {Extract.Core.Properties.Resources.BuildAlarms_AlarmOn} {device.Name}";
+                                                        }
                                                         else
                                                         {
-                                                            var tagTables = new List<HmiTagTable>();
-                                                            tagTables.AddRange(hmiUnified.TagTables);
+                                                            exclusiveAccess.Text = $"{Extract.Core.Properties.Resources.BuildAlarms_CreateAlarm} {globalDB.Name}/{exportTag.Name} {Extract.Core.Properties.Resources.BuildAlarms_AlarmOn} {device.Name}";
 
-                                                            var tagTablesGroup = new List<HmiTagTableGroup>();
-                                                            tagTablesGroup.AddRange(hmiUnified.TagTableGroups);
-                                                            do
+                                                            if (string.IsNullOrEmpty(folderName))
+                                                                tag = hmiUnified.Tags.Create(tagname);
+                                                            else
                                                             {
-                                                                if (tagTablesGroup.Count > 0)
+                                                                var tagTables = new List<HmiTagTable>();
+                                                                tagTables.AddRange(hmiUnified.TagTables);
+
+                                                                var tagTablesGroup = new List<HmiTagTableGroup>();
+                                                                tagTablesGroup.AddRange(hmiUnified.TagTableGroups);
+                                                                do
                                                                 {
-                                                                    tagTables.AddRange(tagTablesGroup[0].TagTables);
-                                                                    tagTablesGroup.AddRange(tagTablesGroup[0].Groups);
-                                                                    tagTablesGroup.RemoveAt(0);
-                                                                }
-                                                            } while (tagTablesGroup.Count > 0);
+                                                                    if (tagTablesGroup.Count > 0)
+                                                                    {
+                                                                        tagTables.AddRange(tagTablesGroup[0].TagTables);
+                                                                        tagTablesGroup.AddRange(tagTablesGroup[0].Groups);
+                                                                        tagTablesGroup.RemoveAt(0);
+                                                                    }
+                                                                } while (tagTablesGroup.Count > 0);
 
-                                                            if (!tagTables.Any(a => a.Name == folderName))
-                                                                hmiUnified.TagTables.Create(folderName);
-                                                            
-                                                            tag = hmiUnified.Tags.Create(tagname, folderName);
+                                                                if (!tagTables.Any(a => a.Name == folderName))
+                                                                    hmiUnified.TagTables.Create(folderName);
+
+                                                                tag = hmiUnified.Tags.Create(tagname, folderName);
+                                                            }
                                                         }
-                                                    }
-                                                    tag.Connection = connexion.Name;
-                                                    tag.PlcTag = $"{globalDB.Name}.{internalMember.Name}";
+                                                        tag.Connection = connexion.Name;
+                                                        tag.PlcTag = plcTag;
 
-                                                    var alarms = hmiUnified.DiscreteAlarms.Find(tagname) ?? hmiUnified.DiscreteAlarms.Create(tagname);
-                                                    alarms.RaisedStateTag = tagname;
-                                                    alarms.AlarmClass = alarmClass.Name;
+                                                        var alarms = hmiUnified.DiscreteAlarms.Find(tagname) ?? hmiUnified.DiscreteAlarms.Create(tagname);
+                                                        alarms.RaisedStateTag = tagname;
+                                                        alarms.AlarmClass = alarmClass.Name;
 
-                                                    alarms.Origin = globalDB.Name.Replace(databaseMark, string.Empty);
+                                                        alarms.Origin = globalDB.Name.Replace(_settings.BlockExtension, string.Empty);
 
-                                                    foreach (var lang in activeLanguages)
-                                                    {
-                                                        if (alarms.EventText.Items.Find(lang) is MultilingualTextItem multilingualText)
+                                                        foreach (var lang in activeLanguages)
                                                         {
-                                                            if(exportTag.Comment.Find(comment => comment.Lang == lang.Culture.Name) is MultiLanguageText txt)
-                                                                multilingualText.Text = $"<body><p>{txt.Value}</p></body>";
+                                                            if (alarms.EventText.Items.Find(lang) is MultilingualTextItem multilingualText)
+                                                                multilingualText.Text = $"<body><p>{GetCommentText(lang.Culture, exportTag)}</p></body>";
                                                         }
-                                                    }
-                                                    break;
+                                                        break;
+                                                }
                                             }
                                         }
-                                    }
-                                    _feedbackContext.Log(NotificationIcon.Success, $"{Extract.Core.Properties.Resources.BuildAlarms_UpdateOnDevice} {device.Name}");
+                                        _feedbackContext.Log(NotificationIcon.Success, $"{Extract.Core.Properties.Resources.BuildAlarms_UpdateOnDevice} {device.Name}");
 
-                                    break;
+                                        break;
+                                }
                             }
                         }
                     }
-                }
 
                 myFile.Close();
                 File.Delete(path);
 
             }
+        }
+
+        private void OnSettings(MenuSelectionProvider menuSelectionProvider)
+        {
+            _settings = Settings.Load();
+
+            MainWindow = new Extract_UI.MainWindow
+            {
+                Topmost = true,
+                ShowActivated = true,
+                DataContext = _settings
+            };
+
+            if (MainWindow.ShowDialog() == true)
+                _settings.Save();
+
+            //if (MainWindow.ClosedByUser)
+            //{
+            //    System.Environment.Exit(0); // exit the addin if closed by button
+            //}
         }
 
         // Returns PlcSoftware or HmiSoftware
@@ -455,6 +491,28 @@ namespace TIA_Extract
                 }
                 catch { }
             }
+        }
+
+        private SimaticML.SW.InterfaceSections.Member_T GetExportMember(Member member, SimaticML.SW.InterfaceSections.Member_T[] members)
+        {
+            IEnumerable<SimaticML.SW.InterfaceSections.Member_T> tempMembers = members;
+            var tags = member.Name.Split('.');
+            foreach (var tagComposition in tags.Take(tags.Length - 1))
+            {
+                tempMembers = tempMembers.FirstOrDefault(m => m.Name == tagComposition).Items.Where(i => i is SimaticML.SW.InterfaceSections.Member_T).Cast<SimaticML.SW.InterfaceSections.Member_T>();
+            }
+
+            return tempMembers.FirstOrDefault(m => m.Name == tags.Last());
+        }
+
+        private string GetCommentText(CultureInfo culture, SimaticML.SW.InterfaceSections.Member_T member)
+        {
+            string result = null;
+            foreach (var item in member.Items.Where(i => i is SimaticML.SW.Common.Comment).Cast<SimaticML.SW.Common.Comment>())
+            {
+                result = item.MultiLanguageText.FirstOrDefault(comment => comment.Lang == culture.Name).Value;
+            }
+            return result;
         }
     }
 }

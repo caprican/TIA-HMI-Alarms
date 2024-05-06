@@ -3,11 +3,11 @@
   <!--Enter values for Author, Description, AddInVersion, Name, ...-->
   <Author>A. MORELLET</Author>
   <Description>Convert comment from global db to hmi alarms</Description>
-  <AddInVersion>V1.2</AddInVersion>
+  <AddInVersion>V1.3</AddInVersion>
   <Product>
     <Name>Alarms builder</Name>
     <Id>906ABF3F-C4CA-45F7-98F0-2E78F9F3D48B</Id>
-    <Version>19.0.1.2</Version>
+    <Version>19.0.1.3</Version>
   </Product>
   <FeatureAssembly>
     <AssemblyInfo>
@@ -27,7 +27,10 @@
       <Assembly>SimaticML.dll</Assembly>
       <Pdb>SimaticML.pdb</Pdb>
     </AssemblyInfo>
-
+    <AssemblyInfo>
+      <Assembly>Extract_UI.dll</Assembly>
+      <Pdb>Extract_UI.pdb</Pdb>
+    </AssemblyInfo>
   </AdditionalAssemblies>
 
   <RequiredPermissions>
@@ -36,7 +39,7 @@
     </TIAPermissions>
 
     <SecurityPermissions>
-      <!--<System.Security.Permissions.SecurityPermission.UnmanagedCode/>-->
+      <System.Security.Permissions.SecurityPermission.UnmanagedCode/>
       <System.Security.Permissions.FileDialogPermission/>
       <System.Security.Permissions.UIPermission/>
       <!--<System.Security.Permissions.MediaPermission/>-->
@@ -56,7 +59,7 @@
       <System.Data.OleDb.OleDbPermission/>
       <!--<System.Security.Permissions.RegistryPermission/>-->
       <!--<System.Data.SqlClient.SqlClientPermission/>-->
-      <!--<System.Security.Permissions.EnvironmentPermission/>-->
+      <System.Security.Permissions.EnvironmentPermission/>
       <!--<System.Net.Mail.SmtpPermission/>-->
     </SecurityPermissions>
   </RequiredPermissions>

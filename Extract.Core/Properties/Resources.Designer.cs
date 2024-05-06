@@ -178,6 +178,15 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Settings.
+        /// </summary>
+        public static string ContextMenu_Settings {
+            get {
+                return ResourceManager.GetString("ContextMenu_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à No alarm DB found in folder.
         /// </summary>
         public static string EmptyGlobalDb {

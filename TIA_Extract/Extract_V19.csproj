@@ -46,6 +46,8 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Condition="'$(TiaPortalLocation)' != ''" Include="Siemens.Engineering.AddIn">
       <HintPath>$(TiaPortalLocation)\PublicAPI\V19.AddIn\Siemens.Engineering.AddIn.dll</HintPath>
       <Private>False</Private>
@@ -58,9 +60,7 @@
       <HintPath>$(TiaPortalLocation)\PublicAPI\V19.AddIn\Siemens.Engineering.AddIn.Permissions.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SimaticML">
-      <HintPath>..\..\SimaticML\SimaticML\bin\Debug\netstandard2.0\SimaticML.dll</HintPath>
-    </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config.xml">
@@ -68,10 +68,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SimaticML\SimaticML\SimaticML.csproj" />
     <ProjectReference Include="..\Extract.Core\Extract.Core.csproj">
       <Private>True</Private>
       <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
+    <ProjectReference Include="..\Extract_UI\Extract_UI.csproj" />
   </ItemGroup>
 </Project>
