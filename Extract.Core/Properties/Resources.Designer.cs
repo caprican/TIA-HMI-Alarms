@@ -133,7 +133,7 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Updayte HMI alarm from.
+        ///   Recherche une chaîne localisée semblable à Update HMI alarm from.
         /// </summary>
         public static string BuildAlarms_UpdateAlarm {
             get {
@@ -169,11 +169,29 @@ namespace Extract.Core.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Build.
+        ///   Recherche une chaîne localisée semblable à Build alarms.
         /// </summary>
-        public static string ContextMenu_GlobalDb {
+        public static string ContextMenu_BuildAlarms {
             get {
-                return ResourceManager.GetString("ContextMenu_GlobalDb", resourceCulture);
+                return ResourceManager.GetString("ContextMenu_BuildAlarms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Build Folder tags.
+        /// </summary>
+        public static string ContextMenu_BuildFolderTags {
+            get {
+                return ResourceManager.GetString("ContextMenu_BuildFolderTags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Build HMI tags.
+        /// </summary>
+        public static string ContextMenu_BuildTags {
+            get {
+                return ResourceManager.GetString("ContextMenu_BuildTags", resourceCulture);
             }
         }
         

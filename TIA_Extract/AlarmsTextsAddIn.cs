@@ -299,7 +299,7 @@ namespace TIA_Extract
                                     return;
                                 }
 
-                                var exportDb = Db.AttributeList.Interface.Sections.FirstOrDefault(section => section.Name == SimaticML.SW.InterfaceSections.SectionName_TE.Static);
+                                var exportDb = Db.AttributeList.Interface.Sections.FirstOrDefault(section => section.Name == SimaticML.SW.Common.SectionName_TE.Static);
 
                                 var softContainer = deviceItem.GetService<SoftwareContainer>();
                                 switch (softContainer?.Software)
@@ -317,6 +317,13 @@ namespace TIA_Extract
                                         }
 
                                         var alarmClass = hmiUnified.AlarmClasses.Find(_settings.DefaultAlarmsClass);
+
+                                        var hmiTagspath = Path.Combine(projectDirectoryPath, userFolder, hmiUnified.Name + "_Tags.xml");
+                                        if (File.Exists(hmiTagspath))
+                                            File.Delete(hmiTagspath);
+                                        hmiUnified.Tags.Export(new DirectoryInfo(hmiTagspath));
+
+                                        _feedbackContext.Log(NotificationIcon.Success, $"export : {hmiTagspath}");
 
                                         foreach (var internalMember in globalDB.Interface.Members)
                                         {
@@ -368,7 +375,9 @@ namespace TIA_Extract
                                                                 plcTag += $".{item}";
                                                         }
 
-                                                        if(hmiUnified.Tags.FirstOrDefault(f => f.PlcTag == plcTag) is HmiTag hmiTag)
+                                                        
+
+                                                        if (hmiUnified.Tags.FirstOrDefault(f => f.PlcTag == plcTag) is HmiTag hmiTag)
                                                         {
                                                             tag = hmiTag;
                                                             if(tag.Name != tagname)
@@ -423,6 +432,10 @@ namespace TIA_Extract
                                                             if (alarms.EventText.Items.Find(lang) is MultilingualTextItem multilingualText)
                                                                 multilingualText.Text = $"<body><p>{GetCommentText(lang.Culture, exportTag)}</p></body>";
                                                         }
+
+                                                        tag = null;
+                                                        plcTag = null;
+                                                        alarms = null;
                                                         break;
                                                 }
                                             }
@@ -431,6 +444,8 @@ namespace TIA_Extract
 
                                         break;
                                 }
+                                softContainer = null;
+
                             }
                         }
                     }

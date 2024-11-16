@@ -145,7 +145,7 @@
     <value>and</value>
   </data>
   <data name="BuildAlarms_UpdateAlarm" xml:space="preserve">
-    <value>Updayte HMI alarm from</value>
+    <value>Update HMI alarm from</value>
   </data>
   <data name="BuildAlarms_UpdateOnDevice" xml:space="preserve">
     <value>HMI Alarms updated on</value>
@@ -153,8 +153,8 @@
   <data name="CancelByUser" xml:space="preserve">
     <value>Build canceled by user</value>
   </data>
-  <data name="ContextMenu_GlobalDb" xml:space="preserve">
-    <value>Build</value>
+  <data name="ContextMenu_BuildAlarms" xml:space="preserve">
+    <value>Build alarms</value>
   </data>
   <data name="ContextMenu_Settings" xml:space="preserve">
     <value>Settings</value>
@@ -170,5 +170,11 @@
   </data>
   <data name="TaskGenerateCancel" xml:space="preserve">
     <value>Tack canceled by user</value>
+  </data>
+  <data name="ContextMenu_BuildFolderTags" xml:space="preserve">
+    <value>Build Folder tags</value>
+  </data>
+  <data name="ContextMenu_BuildTags" xml:space="preserve">
+    <value>Build HMI tags</value>
   </data>
 </root>

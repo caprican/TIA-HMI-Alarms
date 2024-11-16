@@ -5,15 +5,20 @@ using System.Xml.Serialization;
 
 namespace TIA_Extract.Utility
 {
+    /// <summary>
+    /// Settings of the add-in
+    /// </summary>
     [XmlRoot]
     [XmlType]
     public class Settings
     {
-
         public string BlockExtension { get; set; }
         public string DefaultAlarmsClass { get; set; }
         public bool SimplifyTagname { get; set; }
 
+        /// <summary>
+        /// Path to the settings file
+        /// </summary>
         private static readonly string SettingsFilePath;
 
         static Settings()
@@ -30,6 +35,11 @@ namespace TIA_Extract.Utility
             SimplifyTagname = true;
         }
 
+        /// <summary>
+        /// Loads the Settings file into the setting object if file exist
+        /// otherwise creates new file with default settings
+        /// </summary>
+        /// <returns>Settings object with loaded or default settings</returns>
         public static Settings Load()
         {
             if (File.Exists(SettingsFilePath) == false)
@@ -52,6 +62,9 @@ namespace TIA_Extract.Utility
 
         }
 
+        /// <summary>
+        /// Saves the current configuration to the file
+        /// </summary>
         public void Save()
         {
             try
